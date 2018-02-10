@@ -7,13 +7,16 @@ open('numbers.csv', "w") { |f| f << 'First Name,Mobile No.
 ' } 
 @count = 1
 
+# STDOUT.puts browser.table(:id, 'vendorsCatListSymbols')
+
 browser.table(:id, 'vendorsCatListSymbols').links.each do |linkk|
+
 	@hreff = linkk.href
-	browser.execute_script('window.open("'+@hreff.to_s+'")')
-	window = browser.window(:title, 'Avtar Enclave - Avtar Enclave')
+	@browser2 = Watir::Browser.new :chrome
+	@browser2.goto @hreff
 	loop do
-		window.goto @hreff
-		window.spans(:class, 'vendorsListing_field_mobile').each do |row|
+		@browser2.goto @hreff
+		@browser2.spans(:class, 'vendorsListing_field_mobile').each do |row|
 			if row.text[12] != '.'
 				open('numbers.csv', "a") { |f| f << @count.to_s+','+row.text[12..21]+'
 ' } 
@@ -21,11 +24,10 @@ browser.table(:id, 'vendorsCatListSymbols').links.each do |linkk|
 			end
 		end
 		
-		if window.link(:text, 'Next').present?
-			@hreff = window.link(:text, 'Next').href
+		if @browser2.link(:text, 'Next').present?
+			@hreff = @browser2.link(:text, 'Next').href
 		else
-			# browser.window(:title, POPUPWINDOW).close
-			window.close
+			@browser2.close
 			break
 		end		
 	end
